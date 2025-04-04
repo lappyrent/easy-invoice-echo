@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { 
   Plus, 
   Search, 
@@ -23,79 +23,71 @@ import {
   CardContent
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
+import { Link } from "react-router-dom";
 
-const clients = [
-  {
-    id: "1",
-    name: "Acme Inc.",
-    contact: "John Doe",
-    email: "john@acme.com",
-    phone: "+1 (555) 123-4567",
-    totalBilled: "$5,240.00",
-    address: "123 Business Ave, Suite 100, San Francisco, CA 94107",
-    activeInvoices: 2
-  },
-  {
-    id: "2",
-    name: "Globex Corporation",
-    contact: "Jane Smith",
-    email: "jane@globex.com",
-    phone: "+1 (555) 987-6543",
-    totalBilled: "$3,800.00",
-    address: "456 Corporate Blvd, New York, NY 10001",
-    activeInvoices: 1
-  },
-  {
-    id: "3",
-    name: "Initech",
-    contact: "Michael Johnson",
-    email: "michael@initech.com",
-    phone: "+1 (555) 456-7890",
-    totalBilled: "$7,320.00",
-    address: "789 Tech Park, Austin, TX 78701",
-    activeInvoices: 3
-  },
-  {
-    id: "4",
-    name: "Massive Dynamic",
-    contact: "Sarah Williams",
-    email: "sarah@massive.com",
-    phone: "+1 (555) 789-0123",
-    totalBilled: "$2,150.00",
-    address: "321 Innovation Way, Boston, MA 02108",
-    activeInvoices: 0
-  },
-  {
-    id: "5",
-    name: "Wayne Enterprises",
-    contact: "Bruce Wayne",
-    email: "bruce@wayne.com",
-    phone: "+1 (555) 321-6547",
-    totalBilled: "$9,620.00",
-    address: "1 Wayne Tower, Gotham City, NJ 07101",
-    activeInvoices: 2
-  },
-  {
-    id: "6",
-    name: "Stark Industries",
-    contact: "Tony Stark",
-    email: "tony@stark.com",
-    phone: "+1 (555) 432-1098",
-    totalBilled: "$12,480.00",
-    address: "200 Park Avenue, Manhattan, NY 10166",
-    activeInvoices: 4
-  }
-];
+interface Client {
+  id: string;
+  name: string;
+  contact_name: string | null;
+  email: string | null;
+  phone: string | null;
+  address: string | null;
+  created_at: string;
+  active_invoices?: number;
+  total_billed?: string;
+}
 
 const Clients = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [clients, setClients] = useState<Client[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
   
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        setLoading(true);
+        
+        const { data, error } = await supabase
+          .from('clients')
+          .select('*')
+          .order('created_at', { ascending: false });
+          
+        if (error) {
+          throw error;
+        }
+        
+        // For now, add mock data for total_billed and active_invoices
+        const clientsWithExtras = data.map(client => ({
+          ...client,
+          total_billed: '$' + (Math.floor(Math.random() * 9000) + 1000) + '.00',
+          active_invoices: Math.floor(Math.random() * 4),
+        }));
+        
+        setClients(clientsWithExtras);
+      } catch (error) {
+        toast({
+          title: "Error fetching clients",
+          description: "Could not load clients.",
+          variant: "destructive",
+        });
+        console.error("Error fetching clients:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchClients();
+  }, [toast]);
+
   // Filter clients based on search term
   const filteredClients = clients.filter(
     client => 
       client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.contact.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.email.toLowerCase().includes(searchTerm.toLowerCase())
+      (client.contact_name && client.contact_name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (client.email && client.email.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   return (
@@ -133,73 +125,98 @@ const Clients = () => {
         </div>
       </div>
       
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {filteredClients.map((client) => (
-          <Card key={client.id} className="overflow-hidden">
-            <CardContent className="p-0">
-              <div className="p-6">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center space-x-3">
-                    <Avatar className="h-12 w-12 bg-zoho-blue text-white">
-                      <AvatarFallback>{client.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <h3 className="font-semibold">{client.name}</h3>
-                      <p className="text-sm text-gray-500">{client.contact}</p>
+      {loading ? (
+        <div className="flex justify-center py-12">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-zoho-blue border-t-transparent"></div>
+        </div>
+      ) : filteredClients.length === 0 ? (
+        <div className="rounded-lg border border-zoho-border bg-white p-10 text-center">
+          <h3 className="text-xl font-medium">No clients found</h3>
+          {searchTerm ? (
+            <p className="mt-2 text-gray-500">Try adjusting your search terms</p>
+          ) : (
+            <>
+              <p className="mt-2 text-gray-500">Get started by adding your first client</p>
+              <Button className="mt-4 bg-zoho-blue hover:bg-zoho-darkblue">
+                <Plus className="mr-2 h-4 w-4" />
+                <span>Add Client</span>
+              </Button>
+            </>
+          )}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {filteredClients.map((client) => (
+            <Card key={client.id} className="overflow-hidden">
+              <CardContent className="p-0">
+                <div className="p-6">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center space-x-3">
+                      <Avatar className="h-12 w-12 bg-zoho-blue text-white">
+                        <AvatarFallback>{client.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <h3 className="font-semibold">{client.name}</h3>
+                        <p className="text-sm text-gray-500">{client.contact_name || 'No contact name'}</p>
+                      </div>
                     </div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="h-4 w-4" />
+                          <span className="sr-only">Open menu</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem>View Client</DropdownMenuItem>
+                        <DropdownMenuItem>Edit Client</DropdownMenuItem>
+                        <DropdownMenuItem>Create Invoice</DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem className="text-red-600">Delete Client</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Open menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>View Client</DropdownMenuItem>
-                      <DropdownMenuItem>Edit Client</DropdownMenuItem>
-                      <DropdownMenuItem>Create Invoice</DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem className="text-red-600">Delete Client</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  
+                  <div className="mt-4 space-y-2">
+                    {client.email && (
+                      <div className="flex items-center space-x-2 text-sm">
+                        <Mail className="h-4 w-4 text-gray-400" />
+                        <span>{client.email}</span>
+                      </div>
+                    )}
+                    {client.phone && (
+                      <div className="flex items-center space-x-2 text-sm">
+                        <Phone className="h-4 w-4 text-gray-400" />
+                        <span>{client.phone}</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="mt-4 text-sm text-gray-500">
+                    <p className="line-clamp-2">{client.address || 'No address available'}</p>
+                  </div>
                 </div>
                 
-                <div className="mt-4 space-y-2">
-                  <div className="flex items-center space-x-2 text-sm">
-                    <Mail className="h-4 w-4 text-gray-400" />
-                    <span>{client.email}</span>
-                  </div>
-                  <div className="flex items-center space-x-2 text-sm">
-                    <Phone className="h-4 w-4 text-gray-400" />
-                    <span>{client.phone}</span>
+                <div className="border-t border-zoho-border bg-zoho-gray p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-gray-500">Total Billed</p>
+                      <p className="font-semibold text-zoho-blue">{client.total_billed}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">Active Invoices</p>
+                      <p className="font-semibold">{client.active_invoices}</p>
+                    </div>
+                    <Button size="sm" variant="outline">
+                      New Invoice
+                    </Button>
                   </div>
                 </div>
-                
-                <div className="mt-4 text-sm text-gray-500">
-                  <p className="line-clamp-2">{client.address}</p>
-                </div>
-              </div>
-              
-              <div className="border-t border-zoho-border bg-zoho-gray p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs text-gray-500">Total Billed</p>
-                    <p className="font-semibold text-zoho-blue">{client.totalBilled}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500">Active Invoices</p>
-                    <p className="font-semibold">{client.activeInvoices}</p>
-                  </div>
-                  <Button size="sm" variant="outline">
-                    New Invoice
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
