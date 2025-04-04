@@ -63,6 +63,7 @@ const Auth = () => {
   };
 
   const onSignupSubmit = async (data: SignupFormValues) => {
+    // Make sure we're passing all the required fields to signUp
     await signUp(data.email, data.password, data.fullName, data.companyName);
   };
 
