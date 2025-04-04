@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -51,6 +52,14 @@ export default {
 				card: {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
+				},
+				zoho: {
+					blue: '#2962ff',
+					darkblue: '#1a56f0',
+					lightblue: '#4b7aff',
+					gray: '#f5f7fa',
+					darkgray: '#858585',
+					border: '#e0e0e0',
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',

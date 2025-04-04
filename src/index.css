@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -34,20 +35,13 @@
 
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
+    --sidebar-background: 220 33% 98%;
+    --sidebar-foreground: 220 13% 28%;
+    --sidebar-primary: 220 100% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 25% 92%;
+    --sidebar-accent-foreground: 220 50% 30%;
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -79,13 +73,13 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-background: 215 25% 15%;
+    --sidebar-foreground: 215 15% 85%;
+    --sidebar-primary: 220 100% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-accent: 215 20% 20%;
+    --sidebar-accent-foreground: 215 15% 85%;
+    --sidebar-border: 215 20% 25%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
@@ -97,5 +91,32 @@
 
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer components {
+  .zoho-input {
+    @apply block w-full rounded-md border border-zoho-border bg-white px-3 py-2 text-sm focus:border-zoho-blue focus:outline-none focus:ring-1 focus:ring-zoho-blue;
+  }
+  
+  .zoho-btn-primary {
+    @apply inline-flex items-center justify-center rounded-md bg-zoho-blue px-4 py-2 text-sm font-medium text-white hover:bg-zoho-darkblue focus:outline-none focus:ring-2 focus:ring-zoho-blue focus:ring-offset-2;
+  }
+  
+  .zoho-btn-secondary {
+    @apply inline-flex items-center justify-center rounded-md border border-zoho-border bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-zoho-gray focus:outline-none focus:ring-2 focus:ring-zoho-blue focus:ring-offset-2;
+  }
+  
+  .zoho-card {
+    @apply rounded-lg border border-zoho-border bg-white p-4 shadow-sm;
+  }
+  
+  .zoho-sidebar-item {
+    @apply flex items-center rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-zoho-gray hover:text-zoho-blue;
+  }
+  
+  .zoho-sidebar-item-active {
+    @apply flex items-center rounded-md bg-zoho-gray px-3 py-2 text-sm font-medium text-zoho-blue;
   }
 }
