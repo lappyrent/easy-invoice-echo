@@ -8,18 +8,21 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Eye, EyeOff } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters long." }),
+  password: z.string().min(8, { message: "Password must be at least 8 characters long." })
+    .regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter." })
+    .regex(/[a-z]/, { message: "Password must contain at least one lowercase letter." })
+    .regex(/[0-9]/, { message: "Password must contain at least one number." }),
 });
 
 const signupSchema = loginSchema.extend({
   fullName: z.string().min(2, { message: "Full name must be at least 2 characters." }),
   companyName: z.string().min(2, { message: "Company name must be at least 2 characters." }),
-  confirmPassword: z.string().min(6, { message: "Password must be at least 6 characters long." }),
+  confirmPassword: z.string().min(8, { message: "Password must be at least 8 characters long." }),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords do not match",
   path: ["confirmPassword"],
@@ -31,6 +34,8 @@ type SignupFormValues = z.infer<typeof signupSchema>;
 const Auth = () => {
   const { signIn, signUp } = useAuth();
   const [isSignup, setIsSignup] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const location = useLocation();
   const message = location.state?.message;
 
@@ -178,7 +183,20 @@ const Auth = () => {
                       <FormItem>
                         <FormLabel>Password</FormLabel>
                         <FormControl>
-                          <Input type="password" placeholder="••••••••" {...field} />
+                          <div className="relative">
+                            <Input 
+                              type={showPassword ? "text" : "password"} 
+                              placeholder="••••••••" 
+                              {...field} 
+                            />
+                            <button 
+                              type="button"
+                              className="absolute right-3 top-1/2 -translate-y-1/2"
+                              onClick={() => setShowPassword(!showPassword)}
+                            >
+                              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -191,12 +209,28 @@ const Auth = () => {
                       <FormItem>
                         <FormLabel>Confirm Password</FormLabel>
                         <FormControl>
-                          <Input type="password" placeholder="••••••••" {...field} />
+                          <div className="relative">
+                            <Input 
+                              type={showConfirmPassword ? "text" : "password"} 
+                              placeholder="••••••••" 
+                              {...field} 
+                            />
+                            <button 
+                              type="button"
+                              className="absolute right-3 top-1/2 -translate-y-1/2"
+                              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            >
+                              {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+                  <div className="text-sm text-gray-600 mt-2">
+                    Password must be at least 8 characters and include uppercase, lowercase, and numbers.
+                  </div>
                   <Button type="submit" className="w-full bg-zoho-blue">
                     Sign Up
                   </Button>
@@ -225,7 +259,20 @@ const Auth = () => {
                       <FormItem>
                         <FormLabel>Password</FormLabel>
                         <FormControl>
-                          <Input type="password" placeholder="••••••••" {...field} />
+                          <div className="relative">
+                            <Input 
+                              type={showPassword ? "text" : "password"} 
+                              placeholder="••••••••" 
+                              {...field} 
+                            />
+                            <button 
+                              type="button"
+                              className="absolute right-3 top-1/2 -translate-y-1/2"
+                              onClick={() => setShowPassword(!showPassword)}
+                            >
+                              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
