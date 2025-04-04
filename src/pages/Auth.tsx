@@ -56,6 +56,7 @@ const Auth = () => {
       fullName: "",
       companyName: "",
     },
+    mode: "onChange",
   });
 
   const onLoginSubmit = async (data: LoginFormValues) => {
@@ -63,9 +64,15 @@ const Auth = () => {
   };
 
   const onSignupSubmit = async (data: SignupFormValues) => {
-    // Make sure we're passing all the required fields to signUp
+    console.log("Signup form data:", data);
     await signUp(data.email, data.password, data.fullName, data.companyName);
   };
+
+  console.log("Signup form state:", {
+    errors: signupForm.formState.errors,
+    isDirty: signupForm.formState.isDirty,
+    isValid: signupForm.formState.isValid,
+  });
 
   return (
     <div className="flex min-h-screen w-full bg-gray-50">
@@ -145,7 +152,14 @@ const Auth = () => {
                       <FormItem>
                         <FormLabel>Full Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="John Doe" {...field} />
+                          <Input 
+                            placeholder="John Doe" 
+                            {...field} 
+                            onChange={(e) => {
+                              field.onChange(e);
+                              console.log("fullName changed:", e.target.value);
+                            }}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -158,7 +172,14 @@ const Auth = () => {
                       <FormItem>
                         <FormLabel>Company Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="Acme Inc." {...field} />
+                          <Input 
+                            placeholder="Acme Inc." 
+                            {...field}
+                            onChange={(e) => {
+                              field.onChange(e);
+                              console.log("companyName changed:", e.target.value);
+                            }}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
