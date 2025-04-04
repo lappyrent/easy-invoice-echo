@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { 
   Plus, 
@@ -26,18 +25,12 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { Link } from "react-router-dom";
+import type { Database } from "@/integrations/supabase/types";
 
-interface Client {
-  id: string;
-  name: string;
-  contact_name: string | null;
-  email: string | null;
-  phone: string | null;
-  address: string | null;
-  created_at: string;
+type Client = Database['public']['Tables']['clients']['Row'] & {
   active_invoices?: number;
   total_billed?: string;
-}
+};
 
 const Clients = () => {
   const [searchTerm, setSearchTerm] = useState("");

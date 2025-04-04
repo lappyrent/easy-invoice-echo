@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -6,14 +5,11 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
+import type { Database } from "@/integrations/supabase/types";
 
-interface Client {
-  id: string;
-  name: string;
-  contact_name: string | null;
-  email: string | null;
+type Client = Database['public']['Tables']['clients']['Row'] & {
   total_billed?: string;
-}
+};
 
 const RecentClients = () => {
   const [clients, setClients] = useState<Client[]>([]);

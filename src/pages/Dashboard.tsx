@@ -8,6 +8,9 @@ import StatCard from "@/components/dashboard/StatCard";
 import InvoiceStatusChart from "@/components/dashboard/InvoiceStatusChart";
 import RecentInvoices from "@/components/dashboard/RecentInvoices";
 import RecentClients from "@/components/dashboard/RecentClients";
+import type { Database } from "@/integrations/supabase/types";
+
+type Invoice = Database['public']['Tables']['invoices']['Row'];
 
 interface DashboardStats {
   totalRevenue: number;
@@ -68,7 +71,7 @@ const Dashboard = () => {
         };
         
         invoices.forEach(invoice => {
-          if (statusCounts.hasOwnProperty(invoice.status.toLowerCase())) {
+          if (statusCounts.hasOwnProperty(invoice.status.toLowerCase() as keyof typeof statusCounts)) {
             statusCounts[invoice.status.toLowerCase() as keyof typeof statusCounts]++;
           }
         });

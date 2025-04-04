@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -6,19 +5,13 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
+import type { Database } from "@/integrations/supabase/types";
 
-interface Invoice {
-  id: string;
-  invoice_number: string;
-  client_name?: string;
+type Invoice = Database['public']['Tables']['invoices']['Row'] & {
   client?: {
     name: string;
   };
-  total_amount: number;
-  issue_date: string;
-  due_date: string;
-  status: string;
-}
+};
 
 const RecentInvoices = () => {
   const [invoices, setInvoices] = useState<Invoice[]>([]);

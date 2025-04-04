@@ -1,4 +1,3 @@
-
 import { Bell, Search, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -11,13 +10,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 
-interface Profile {
-  id: string;
-  full_name: string | null;
-  email: string | null;
-  company_name: string | null;
-}
+type Profile = Database['public']['Tables']['profiles']['Row'];
 
 const Header = () => {
   const { user, signOut } = useAuth();

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Plus, Filter, Download, ChevronDown, MoreHorizontal, Search } from "lucide-react";
 import { 
@@ -19,18 +18,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import type { Database } from "@/integrations/supabase/types";
 
-interface Invoice {
-  id: string;
-  invoice_number: string;
+type Invoice = Database['public']['Tables']['invoices']['Row'] & {
   client?: {
     name: string;
   };
-  total_amount: number;
-  issue_date: string;
-  due_date: string;
-  status: string;
-}
+};
 
 const Invoices = () => {
   const [searchTerm, setSearchTerm] = useState("");
