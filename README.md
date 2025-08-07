@@ -10,9 +10,9 @@ There are several ways of editing your application.
 
 **Use Lovable**
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/05b5fb8b-6951-4db9-b776-ac77c58e4558) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
+Simply visit the [Lovable Project](https://lovable.dev/projects/05b5fb8b-6951-4db9-b776-ac77c58e4558) and start prompting. We tried to implement on [Lappyrent LLP](https://lappyrentllp.in/)
+. They are selling [Refurbished Laptops in Thane](https://lappyrentllp.in/refurbished-laptops-thane.html) & [renting Laptops in Thane](https://lappyrentllp.in/laptop-rent-thane.html)
+. Changes made via Lovable will be committed automatically to this repo.
 
 **Use your preferred IDE**
 
